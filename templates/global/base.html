@@ -1,0 +1,98 @@
+{% load static %}
+
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <meta
+        name="description"
+        content="BrickMarket, la marketplace de briques pour les collectionneurs adultes."
+    >
+
+    <title>
+        {% block title %}
+            BrickMarket — Construisez votre monde
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/styles.css' %}"
+    >
+</head>
+
+<body data-page="{% block body_page %}home{% endblock %}">
+
+    <!-- =========================================
+         BANDEAU D'ANNONCE
+    ========================================== -->
+
+    <div class="announcement">
+        <span aria-hidden="true">✳</span>
+
+        Livraison offerte dès 75 €
+
+        <span class="announcement-separator" aria-hidden="true">
+            ·
+        </span>
+
+        Retours sous 30 jours
+    </div>
+
+
+    <!-- =========================================
+         HEADER
+    ========================================== -->
+
+    {% include "global/_header.html" %}
+
+
+    <!-- =========================================
+         MESSAGES DJANGO
+    ========================================== -->
+
+    {% if messages %}
+
+        <div class="messages">
+
+            {% for message in messages %}
+
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =========================================
+         CONTENU PRINCIPAL
+    ========================================== -->
+
+    <main class="{% block main_class %}{% endblock %}">
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+
+    {% include "global/_footer.html" %}
+
+</body>
+
+</html>

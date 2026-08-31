@@ -1,0 +1,625 @@
+
+{% extends "global/base.html" %}
+
+{% load static %}
+
+
+{% block title %}
+    Mon panier — BrickMarket
+{% endblock %}
+
+
+{% block main_class %}
+    cart-page
+{% endblock %}
+
+
+{% block content %}
+
+<!-- =========================================================
+     MESSAGES DJANGO
+========================================================= -->
+
+{% if messages %}
+
+    <div class="container messages-container">
+
+        {% for message in messages %}
+
+            <div class="message message-{{ message.tags }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% endif %}
+
+
+<!-- =========================================================
+     EN-TÊTE DU PANIER
+========================================================= -->
+
+<section class="page-intro container">
+
+    <div>
+
+        <p class="eyebrow">
+            BrickMarket
+        </p>
+
+        <h1>
+            Mon panier
+        </h1>
+
+    </div>
+
+
+    {% if cart|length > 0 %}
+
+        <p>
+            <span>{{ cart|length }}</span>
+            article{{ cart|length|pluralize }} dans votre panier
+        </p>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =========================================================
+     PANIER
+========================================================= -->
+
+<section class="container cart-layout">
+
+
+    <!-- =====================================================
+         ARTICLES
+    ====================================================== -->
+
+    <div class="cart-main">
+
+
+        {% if cart|length > 0 %}
+
+
+            <div class="cart-lines">
+
+
+                {% for item in cart %}
+
+                    <article class="cart-line">
+
+
+                        <!-- =================================
+                             IMAGE
+                        ================================== -->
+
+                        <a
+                            href="{% url 'product_details' item.product.slug %}"
+                            class="cart-line-art"
+                            aria-label="Voir {{ item.product.name }}"
+                        >
+
+                            {% if item.product.image %}
+
+                                <img
+                                    src="{{ item.product.image.url }}"
+                                    alt="{{ item.product.name }}"
+                                    class="cart-product-image"
+                                >
+
+                            {% else %}
+
+                                <div class="cart-product-placeholder">
+                                    🧱
+                                </div>
+
+                            {% endif %}
+
+                        </a>
+
+
+                        <!-- =================================
+                             INFORMATIONS PRODUIT
+                        ================================== -->
+
+                        <div class="cart-line-copy">
+
+
+                            {% if item.product.category %}
+
+                                <p class="eyebrow">
+
+                                    {{ item.product.category.name }}
+
+                                </p>
+
+                            {% endif %}
+
+
+                            <h3>
+
+                                <a
+                                    href="{% url 'product_details' item.product.slug %}"
+                                >
+                                    {{ item.product.name }}
+                                </a>
+
+                            </h3>
+
+
+                            <span>
+
+                                {{ item.product.price }} €
+                                / unité
+
+                            </span>
+
+
+                            <!-- =============================
+                                 SUPPRIMER
+                            ============================== -->
+
+                            <form
+                                method="post"
+                                action="{% url 'cart:remove' %}"
+                                class="remove-product-form"
+                            >
+
+                                {% csrf_token %}
+
+                                <input
+                                    type="hidden"
+                                    name="slug"
+                                    value="{{ item.product.slug }}"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="remove-product-button"
+                                >
+                                    🗑
+                                    Supprimer
+                                </button>
+
+                            </form>
+
+
+                        </div>
+
+
+                        <!-- =================================
+                             QUANTITÉ
+                        ================================== -->
+
+                        <div class="quantity-control">
+
+
+                            <!-- DIMINUER -->
+
+                            <form
+                                method="post"
+                                action="{% url 'cart:set_quantity' %}"
+                            >
+
+                                {% csrf_token %}
+
+                                <input
+                                    type="hidden"
+                                    name="slug"
+                                    value="{{ item.product.slug }}"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="quantity"
+                                    value="{{ item.quantity|add:'-1' }}"
+                                >
+
+                                <button
+                                    type="submit"
+                                    aria-label="Diminuer la quantité"
+                                >
+                                    −
+                                </button>
+
+                            </form>
+
+
+                            <!-- QUANTITÉ -->
+
+                            <span class="quantity">
+
+                                {{ item.quantity }}
+
+                            </span>
+
+
+                            <!-- AUGMENTER -->
+
+                            <form
+                                method="post"
+                                action="{% url 'cart:set_quantity' %}"
+                            >
+
+                                {% csrf_token %}
+
+                                <input
+                                    type="hidden"
+                                    name="slug"
+                                    value="{{ item.product.slug }}"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="quantity"
+                                    value="{{ item.quantity|add:'1' }}"
+                                >
+
+                                <button
+                                    type="submit"
+                                    aria-label="Augmenter la quantité"
+                                >
+                                    +
+                                </button>
+
+                            </form>
+
+
+                        </div>
+
+
+                        <!-- =================================
+                             TOTAL ARTICLE
+                        ================================== -->
+
+                        <strong class="line-price">
+
+                            {{ item.total_price }} €
+
+                        </strong>
+
+
+                    </article>
+
+                {% endfor %}
+
+
+                <!-- =========================================
+                     AVANTAGES LIVRAISON
+                ========================================== -->
+
+                <div class="cart-perks">
+
+                    <span>
+                        ✓
+                    </span>
+
+                    <p>
+
+                        <strong>
+                            Livraison offerte
+                        </strong>
+
+                        à partir de 50 € d'achat.
+
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- =================================================
+                 PANIER VIDE
+            ================================================== -->
+
+            <div class="cart-empty">
+
+
+                <div class="cart-empty-icon">
+                    🛒
+                </div>
+
+
+                <p class="eyebrow">
+                    Votre panier
+                </p>
+
+
+                <h2>
+                    Votre panier est vide
+                </h2>
+
+
+                <p>
+                    Découvrez notre collection de sets
+                    et trouvez votre prochain modèle.
+                </p>
+
+
+                <a
+                    href="{% url 'product_catalogue' %}"
+                    class="button button-dark"
+                >
+                    ← Voir la collection
+                </a>
+
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- =====================================================
+         RÉCAPITULATIF
+    ====================================================== -->
+
+    {% if cart|length > 0 %}
+
+        <aside class="order-summary">
+
+
+            <p class="eyebrow">
+                Récapitulatif
+            </p>
+
+
+            <h2>
+                Votre commande
+            </h2>
+
+
+            <!-- =============================================
+                 SOUS-TOTAL
+            ============================================== -->
+
+            <div class="summary-row">
+
+                <span>
+                    Sous-total
+                </span>
+
+                <strong>
+                    {{ cart.get_total_price }} €
+                </strong>
+
+            </div>
+
+
+            <!-- =============================================
+                 LIVRAISON
+            ============================================== -->
+
+            <div class="summary-row">
+
+                <span>
+                    Livraison
+                </span>
+
+                <strong class="free">
+                    Gratuite
+                </strong>
+
+            </div>
+
+
+            <!-- =============================================
+                 TOTAL
+            ============================================== -->
+
+            <div class="summary-total">
+
+                <span>
+                    Total
+                </span>
+
+                <strong>
+                    {{ cart.get_total_price }} €
+                </strong>
+
+            </div>
+
+
+            <!-- =============================================
+                 COMMANDE
+            ============================================== -->
+
+            <button
+                type="button"
+                class="button button-dark button-wide"
+            >
+                Passer la commande
+            </button>
+
+
+            <small>
+                Paiement sécurisé · Livraison suivie
+            </small>
+
+
+            <!-- =============================================
+                 RETOUR COLLECTION
+            ============================================== -->
+
+            <a
+                href="{% url 'product_catalogue' %}"
+                class="continue-shopping"
+            >
+                ← Continuer mes achats
+            </a>
+
+
+        </aside>
+
+    {% endif %}
+
+
+</section>
+
+
+{% endblock %}
+```
+
+### Ajoute également ces quelques règles CSS
+
+Ton CSS actuel couvre déjà la majorité de la page. Ajoute simplement ceci à la fin pour les éléments du nouveau `view.html` :
+
+```css
+/* =========================================================
+   PANIER — COMPLÉMENTS
+========================================================= */
+
+.cart-page {
+    padding-bottom: 60px;
+}
+
+.cart-line-copy h3 a {
+    transition: color var(--transition);
+}
+
+.cart-line-copy h3 a:hover {
+    color: var(--accent-dark);
+}
+
+.remove-product-form {
+    margin-top: 12px;
+}
+
+.remove-product-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 5px 10px;
+
+    border: 1px solid rgba(214, 69, 69, .18);
+    border-radius: 999px;
+
+    background: rgba(214, 69, 69, .06);
+
+    color: var(--danger);
+
+    font-size: 11px;
+    font-weight: 750;
+
+    transition:
+        background var(--transition),
+        color var(--transition),
+        transform var(--transition);
+}
+
+.remove-product-button:hover {
+    background: var(--danger);
+    color: white;
+
+    transform: translateY(-1px);
+}
+
+.cart-empty-icon {
+    display: grid;
+    place-items: center;
+
+    width: 72px;
+    height: 72px;
+
+    margin: 0 auto 20px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 204, 0, .12);
+
+    font-size: 30px;
+}
+
+.cart-empty h2 {
+    margin: 8px 0;
+
+    font-size: 30px;
+
+    letter-spacing: -.04em;
+}
+
+.cart-empty p:not(.eyebrow) {
+    max-width: 450px;
+
+    margin: 0 auto 25px;
+
+    color: var(--text-soft);
+}
+
+.continue-shopping {
+    display: block;
+
+    margin-top: 18px;
+
+    text-align: center;
+
+    color: var(--text-soft);
+
+    font-size: 13px;
+    font-weight: 700;
+
+    transition: color var(--transition);
+}
+
+.continue-shopping:hover {
+    color: var(--text);
+}
+
+.messages-container {
+    padding-top: 20px;
+}
+
+.message {
+    padding: 13px 18px;
+
+    border-radius: 12px;
+
+    background: rgba(22, 134, 91, .08);
+
+    border: 1px solid rgba(22, 134, 91, .15);
+
+    color: var(--success);
+
+    font-size: 13px;
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 620px) {
+
+    .cart-empty {
+        padding: 45px 20px;
+    }
+
+    .cart-empty h2 {
+        font-size: 25px;
+    }
+
+    .remove-product-form {
+        margin-top: 10px;
+    }
+
+    .remove-product-button {
+        min-height: 34px;
+    }
+}
+
+
+**Important :** dans ton template, j'utilise `cart.get_total_price`. Si ton `Cart` actuel n'a pas cette méthode, il faudra l'adapter à ton fichier `cart/cart.py`.

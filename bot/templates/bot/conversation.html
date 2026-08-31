@@ -1,0 +1,408 @@
+{% extends 'global/base.html' %}
+
+{% load custom_filters %}
+
+
+{% block main_class %}
+chat-page container
+{% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="page-intro page-intro-small">
+
+    <div>
+
+        <p class="eyebrow">
+            Assistant Brickmarket
+        </p>
+
+        <h1>
+            Une question ?<br>
+            <em>Brick vous répond.</em>
+        </h1>
+
+    </div>
+
+
+    <p>
+        Un set à choisir, une commande à suivre,
+        une pièce qui manque : dites-nous tout.
+    </p>
+
+
+</div>
+
+
+
+<div class="chat-layout">
+
+
+
+<section 
+    class="chat-panel"
+    aria-label="Conversation avec Brick"
+>
+
+
+
+<header class="chat-panel-head">
+
+
+    <span class="chat-avatar chat-avatar-bot">
+        B
+    </span>
+
+
+    <div>
+
+        <h2>
+            Brick
+        </h2>
+
+
+        <p class="chat-status">
+            En ligne · répond avec Ollama
+        </p>
+
+
+    </div>
+
+
+    <span class="chat-panel-tag">
+        Assistant IA
+    </span>
+
+
+</header>
+
+
+
+
+
+<ol class="chat-thread">
+
+
+{% if conversation %}
+
+
+    {% for message in conversation %}
+
+
+
+        {% if message.role == "user" %}
+
+
+
+        <li class="chat-message chat-message-user">
+
+
+            <span class="chat-avatar chat-avatar-user">
+                A
+            </span>
+
+
+            <div class="chat-bubble">
+
+
+                <p>
+                    {{ message.content }}
+                </p>
+
+
+            </div>
+
+
+        </li>
+
+
+
+        {% elif message.role == "assistant" %}
+
+
+
+        <li class="chat-message chat-message-bot">
+
+
+            <span class="chat-avatar chat-avatar-bot">
+                B
+            </span>
+
+
+            <div class="chat-bubble">
+
+
+                <p>
+                    {{ message.content }}
+                </p>
+
+
+            </div>
+
+
+        </li>
+
+
+
+        {% endif %}
+
+
+
+    {% endfor %}
+
+
+
+{% else %}
+
+
+
+<li class="chat-message chat-message-bot">
+
+
+    <span class="chat-avatar chat-avatar-bot">
+        B
+    </span>
+
+
+    <div class="chat-bubble">
+
+
+        <p>
+            Bonjour ! Je suis Brick, l'assistant
+            LEGO de Brickmarket.
+            Pose-moi une question sur les LEGO.
+        </p>
+
+
+    </div>
+
+
+</li>
+
+
+
+{% endif %}
+
+
+
+</ol>
+
+
+
+
+
+
+
+<div class="chat-suggestions">
+
+
+<p class="eyebrow">
+Questions fréquentes
+</p>
+
+
+<a 
+class="chat-chip"
+href="{% url 'product_catalogue' %}"
+>
+Voir les LEGO disponibles
+</a>
+
+
+
+<a 
+class="chat-chip"
+href="{% url 'product_catalogue' %}"
+>
+Trouver un cadeau LEGO
+</a>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<form 
+
+class="chat-composer"
+
+action="{% url 'bot:send' %}"
+
+method="post"
+
+>
+
+
+{% csrf_token %}
+
+
+
+<label class="chat-composer-field">
+
+
+<span class="chat-composer-label">
+
+Votre message
+
+</span>
+
+
+
+<textarea
+
+name="message"
+
+rows="2"
+
+placeholder="Écrivez votre question LEGO..."
+
+required
+
+></textarea>
+
+
+
+</label>
+
+
+
+
+<button 
+
+class="button button-dark chat-send"
+
+type="submit"
+
+>
+
+Envoyer →
+
+</button>
+
+
+
+
+</form>
+
+
+
+
+
+
+<p class="chat-note">
+
+Brick est un assistant automatique propulsé par Ollama.
+
+</p>
+
+
+
+</section>
+
+
+
+
+
+
+
+<aside class="chat-aside">
+
+
+
+<span class="chat-aside-icon">
+✦
+</span>
+
+
+
+<h2>
+Ce que Brick sait faire
+</h2>
+
+
+
+
+<ul class="chat-skills">
+
+
+<li>
+Conseiller un set LEGO
+</li>
+
+
+<li>
+Trouver une idée cadeau
+</li>
+
+
+<li>
+Répondre sur les collections
+</li>
+
+
+<li>
+Aider à choisir selon budget
+</li>
+
+
+</ul>
+
+
+
+
+
+<div class="chat-human">
+
+
+<p>
+
+<b>
+Besoin d'un humain ?
+</b>
+
+<br>
+
+L'équipe Brickmarket répond du lundi au vendredi.
+
+</p>
+
+
+
+<a 
+
+class="button button-dark button-wide"
+
+href="mailto:bonjour@brickmarket.fr"
+
+>
+
+Contacter l'équipe →
+
+</a>
+
+
+
+</div>
+
+
+
+</aside>
+
+
+
+
+
+</div>
+
+
+
+{% endblock %}
